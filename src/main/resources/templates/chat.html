@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <title>Chat Room</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <link rel="stylesheet" href="/css/chat.css">
+</head>
+
+<body>
+<div class="container">
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" placeholder="Enter your username" class="input" />
+        <button onclick="connect()">Connect</button>
+    </div>
+    <ul id="messages" class="chat-list"></ul>
+    <div class="input-container">
+        <input type="text" id="message" placeholder="Type a message" class="input" />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    let stompClient = null;
+
+    function connect() {
+        const username = document.getElementById("username").value;
+        if (!username) {
+            alert("Please enter a username");
+            return;
+        }
+
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function () {
+            console.log("Connected");
+            stompClient.subscribe('/topic/public', function (message) {
+                showMessage(JSON.parse(message.body).content, username);
+            });
+
+            stompClient.send("/app/chat.addUser", {}, JSON.stringify({ sender: username, type: 'JOIN' }));
+        });
+    }
+
+    function sendMessage() {
+        const messageInput = document.getElementById("message");
+        const messageContent = messageInput.value.trim();
+
+        if (messageContent && stompClient) {
+            const username = document.getElementById("username").value;
+            const message = {
+                sender: username,
+                content: messageContent,
+                type: 'CHAT'
+            };
+            stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(message));
+            showMessage(messageContent, username, true);
+            messageInput.value = '';
+        }
+    }
+
+    function showMessage(message, username, isMine = false) {
+        const messagesList = document.getElementById("messages");
+        const messageElement = document.createElement("li");
+        messageElement.className = `message-container ${isMine ? 'mine' : 'yours'}`;
+        messageElement.innerHTML = `
+                <span class="nickname">${username}</span><br />
+                <span class="message">${message}</span>
+            `;
+        messagesList.appendChild(messageElement);
+        messagesList.scrollTop = messagesList.scrollHeight; // 자동 스크롤
+    }
+</script>
+</body>
+</html>

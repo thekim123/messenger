@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <title>회원가입</title>
+    <link rel="stylesheet" href="/css/chat.css">
+</head>
+<body>
+<div class="container">
+    <h1>회원가입</h1>
+    <div id="error-message" style="color: red; display: none;"></div>
+    <div class="form-group">
+        <label for="username">사용자 이름:</label>
+        <input type="text" id="username" placeholder="사용자 이름을 입력하세요" class="input" />
+    </div>
+    <div class="form-group">
+        <label for="password">비밀번호:</label>
+        <input type="password" id="password" placeholder="비밀번호를 입력하세요" class="input" />
+    </div>
+    <div class="form-group">
+        <label for="confirm-password">비밀번호 확인:</label>
+        <input type="password" id="confirm-password" placeholder="비밀번호를 다시 입력하세요" class="input" />
+    </div>
+    <div class="form-group">
+        <button onclick="submitSignup()" class="btn">회원가입</button>
+    </div>
+    <div class="form-group">
+        <a href="/login" class="link">이미 계정이 있으신가요? 로그인</a>
+    </div>
+</div>
+
+<script>
+    async function submitSignup() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const confirmPassword = document.getElementById('confirm-password').value.trim();
+        const errorMessage = document.getElementById('error-message');
+
+        // 입력값 검증
+        if (!username || !password || !confirmPassword) {
+            errorMessage.textContent = "모든 필드를 채워주세요.";
+            errorMessage.style.display = "block";
+            return;
+        }
+        if (password !== confirmPassword) {
+            errorMessage.textContent = "비밀번호가 일치하지 않습니다.";
+            errorMessage.style.display = "block";
+            return;
+        }
+
+        // 서버로 데이터 전송
+        try {
+            const response = await fetch('/api/user/join', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
+
+            if (response.ok) {
+                // 성공 처리
+                alert('회원가입이 완료되었습니다.');
+                window.location.href = '/login'; // 로그인 페이지로 이동
+            } else {
+                // 실패 처리
+                const data = await response.json();
+                errorMessage.textContent = data.message || "회원가입에 실패했습니다.";
+                errorMessage.style.display = "block";
+            }
+        } catch (error) {
+            console.error(error);
+            errorMessage.textContent = "서버 오류가 발생했습니다.";
+            errorMessage.style.display = "block";
+        }
+    }
+</script>
+</body>
+</html>

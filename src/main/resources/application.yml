@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: messenger
+  datasource:
+    url: jdbc:mariadb://localhost:3306/messenger
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: namusd
+    password: namusd
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+  web:
+    resources:
+      static-locations: classpath:/static/
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: create
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+
+server:
+  port: 8080
