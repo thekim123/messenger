@@ -7,7 +7,11 @@ import javax.persistence.EntityNotFoundException;
 
 public class UserServiceHelper {
 
-    public static User findUser(Long id, UserRepository repository){
+    public static User findById(Long id, UserRepository repository){
         return repository.findById(id).orElseThrow(EntityNotFoundException::new);
+    }
+
+    public static User findByUsername(String username, UserRepository repository){
+        return repository.findByUsername(username).orElseThrow(EntityNotFoundException::new);
     }
 }

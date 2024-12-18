@@ -24,7 +24,8 @@ public class UserApiController {
     @PostMapping("/{userId}/add/{friendId}")
     public ResponseEntity<String> addFriend(@PathVariable Long userId, @PathVariable Long friendId) {
         userService.addFriend(userId, friendId);
-
         return ResponseEntity.ok("Friend added successfully");
     }
+
+
 }
