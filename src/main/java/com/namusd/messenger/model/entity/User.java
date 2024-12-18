@@ -2,6 +2,7 @@ package com.namusd.messenger.model.entity;
 
 import com.namusd.messenger.common.BaseTimeEntity;
 import com.namusd.messenger.model.domain.UserRole;
+import com.namusd.messenger.model.dto.UserDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -22,10 +23,10 @@ public class User extends BaseTimeEntity {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(name = "username", unique=true)
+    @Column(name = "username", unique = true)
     private String username;
 
-    @Column(name = "password", nullable=false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -40,4 +41,14 @@ public class User extends BaseTimeEntity {
             inverseJoinColumns = @JoinColumn(name = "friend_id") // 친구 User ID
     )
     private Set<User> friends = new HashSet<>();
+
+
+
+    public UserDto.Response toDto() {
+        return UserDto.Response.builder()
+                .id(this.id)
+                .username(this.username)
+                .roles(this.roles)
+                .build();
+    }
 }

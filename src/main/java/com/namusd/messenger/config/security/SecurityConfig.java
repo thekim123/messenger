@@ -8,7 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -17,12 +16,15 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final UserRepository userRepository;
+    private final CorsConfig corsConfig;
 
     @Bean
     SecurityFilterChain configure(HttpSecurity http) throws Exception {
         return http
                 .csrf().disable()
-                .formLogin().loginPage("/auth/login").permitAll()
+                .formLogin().disable()
+                .httpBasic().disable()
+                .apply(new NamuDsl(userRepository, corsConfig))
                 .and()
                 .authorizeRequests(authorize -> authorize
                         .antMatchers("/api/admin/**").hasRole("ADMIN")

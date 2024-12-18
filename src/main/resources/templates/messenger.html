@@ -42,7 +42,38 @@
     function showFriends() {
         document.getElementById('friends-list').classList.remove('hidden');
         document.getElementById('chat-rooms-list').classList.add('hidden');
+        getFriendList()
     }
+
+    async function getFriendList(){
+        try {
+            const response = await fetch('/api/user/join', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
+            if (response.ok) {
+                // 성공 처리
+                alert('회원가입이 완료되었습니다.');
+                window.location.href = '/login'; // 로그인 페이지로 이동
+            } else {
+                // 실패 처리
+                const data = await response.json();
+                errorMessage.textContent = data.message || "회원가입에 실패했습니다.";
+                errorMessage.style.display = "block";
+            }
+        } catch (error) {
+            console.error(error);
+            errorMessage.textContent = "서버 오류가 발생했습니다.";
+            errorMessage.style.display = "block";
+        }
+    }
+
 
     function showChatRooms() {
         document.getElementById('friends-list').classList.add('hidden');
