@@ -45,7 +45,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 .replace(JwtProperties.TOKEN_PREFIX, "");
 
         try {
-            String username = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(token)
+            String username = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET))
+                    .build().verify(token)
                     .getClaim("username").asString();
 
             if (username != null) {
@@ -62,7 +63,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             }
         } catch (TokenExpiredException e) {
             log.error("Token is expired or invalid.");
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN); // Set status to 403 Forbidden
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Set status to 403 Forbidden
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write("{\"error\": \"Token is expired or invalid.\"}");
