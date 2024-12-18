@@ -1,5 +1,6 @@
 package com.namusd.messenger.service;
 
+import com.namusd.messenger.config.security.auth.PrincipalDetails;
 import com.namusd.messenger.handler.ex.BadRequestApiException;
 import com.namusd.messenger.helper.FriendshipServiceHelper;
 import com.namusd.messenger.helper.UserServiceHelper;
@@ -10,6 +11,7 @@ import com.namusd.messenger.model.entity.User;
 import com.namusd.messenger.repository.FriendshipRepository;
 import com.namusd.messenger.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,11 +26,11 @@ public class FriendshipService {
     private final UserRepository userRepository;
 
     @Transactional
-    public FriendshipDto.Response sendFriendRequest(Long userId, Long friendId) {
-        User user = UserServiceHelper.findUser(userId, userRepository);
-        User friend = UserServiceHelper.findUser(friendId, userRepository);
+    public FriendshipDto.Response sendFriendRequest(Long userId, String friendUsername) {
+        User user = UserServiceHelper.findById(userId, userRepository);
+        User friend = UserServiceHelper.findByUsername(friendUsername, userRepository);
 
-        if (FriendshipServiceHelper.existFriendship(userId, friendId, friendshipRepository)) {
+        if (FriendshipServiceHelper.existFriendship(userId, friend.getId(), friendshipRepository)) {
             throw new BadRequestApiException("이미 요청을 한 사용자입니다.");
         }
 
@@ -42,16 +44,30 @@ public class FriendshipService {
     }
 
     @Transactional
-    public FriendshipDto.Response acceptFriendRequest(Long userId, Long friendId) {
-        Friendship friendship = FriendshipServiceHelper.findFriendship(userId, friendId, friendshipRepository);
+    public FriendshipDto.Response acceptFriendRequest(Long userId, String friendUsername) {
+        User friend = UserServiceHelper.findByUsername(friendUsername, userRepository);
+        Friendship friendship = FriendshipServiceHelper.findFriendship(userId, friend.getId(), friendshipRepository);
         friendship.accept();
         return friendshipRepository.save(friendship).toDto();
     }
 
-    @Transactional(readOnly = true)
-    public List<Friendship> getFriends(Long userId) {
-        return friendshipRepository.findByUserIdAndStatus(userId, FriendStatus.ACCEPTED);
+    @Transactional
+    public FriendshipDto.Response rejectFriendRequest(Long userId, String friendUsername) {
+        User friend = UserServiceHelper.findByUsername(friendUsername, userRepository);
+        Friendship friendship = FriendshipServiceHelper.findFriendship(userId, friend.getId(), friendshipRepository);
+        friendship.reject();
+        return friendshipRepository.save(friendship).toDto();
     }
 
+    @Transactional(readOnly = true)
+    public List<Friendship> getFriends(Authentication auth) {
+        User user = ((PrincipalDetails) auth.getPrincipal()).getUser();
+        return friendshipRepository.findByUserIdAndStatus(user.getId(), FriendStatus.ACCEPTED);
+    }
 
+    @Transactional(readOnly = true)
+    public List<Friendship> getPendingFriends(Authentication auth) {
+        User user = ((PrincipalDetails) auth.getPrincipal()).getUser();
+        return friendshipRepository.findByUserIdAndStatus(user.getId(), FriendStatus.PENDING);
+    }
 }
