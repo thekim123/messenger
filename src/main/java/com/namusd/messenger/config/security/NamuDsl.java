@@ -8,17 +8,19 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 public class NamuDsl extends AbstractHttpConfigurer<NamuDsl, HttpSecurity> {
     private final UserRepository userRepository;
     private final CorsConfig corsConfig;
+    private final JwtService jwtService;
 
-    public NamuDsl(UserRepository userRepository, CorsConfig corsConfig) {
+    public NamuDsl(UserRepository userRepository, CorsConfig corsConfig, JwtService jwtService) {
         this.userRepository = userRepository;
         this.corsConfig = corsConfig;
+        this.jwtService = jwtService;
     }
 
     @Override
     public void configure(HttpSecurity builder) {
         AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
         builder.addFilter(corsConfig.corsFilter())
-                .addFilter(new JwtAuthenticationFilter(authenticationManager))
+                .addFilter(new JwtAuthenticationFilter(authenticationManager, jwtService))
                 .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository));
     }
 

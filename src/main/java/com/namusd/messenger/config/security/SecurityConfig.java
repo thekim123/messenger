@@ -17,6 +17,7 @@ public class SecurityConfig {
 
     private final UserRepository userRepository;
     private final CorsConfig corsConfig;
+    private final JwtService jwtService;
 
     @Bean
     SecurityFilterChain configure(HttpSecurity http) throws Exception {
@@ -24,7 +25,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .formLogin().disable()
                 .httpBasic().disable()
-                .apply(new NamuDsl(userRepository, corsConfig))
+                .apply(new NamuDsl(userRepository, corsConfig, jwtService))
                 .and()
                 .authorizeRequests(authorize -> authorize
                         .antMatchers("/api/admin/**").hasRole("ADMIN")
@@ -35,7 +36,6 @@ public class SecurityConfig {
                 .build();
     }
 
-    // AuthenticationManager 빈으로 정의
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
