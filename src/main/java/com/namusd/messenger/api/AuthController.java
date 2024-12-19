@@ -13,11 +13,9 @@ import com.namusd.messenger.model.dto.JwtDto;
 import com.namusd.messenger.model.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,10 +27,11 @@ public class AuthController {
 
     private final JwtFacade jwtFacade;
 
-    @GetMapping("/refresh")
-    public ResponseEntity<?> refreshToken(@RequestBody String refreshToken, HttpServletRequest request) {
+    @PostMapping(value = "/refresh", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> refreshToken(@RequestBody JwtDto.RefreshRequest refreshToken, HttpServletRequest request) {
         String requestUrl = request.getRequestURL().toString();
-        JwtDto.Refresh tokens = jwtFacade.refreshJwt(refreshToken, requestUrl);
+        JwtDto.Refresh tokens = jwtFacade.refreshJwt(refreshToken.getSendRefreshToken(), requestUrl);
         return ResponseEntity.ok(tokens);
     }
+
 }

@@ -9,12 +9,17 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.persistence.EntityNotFoundException;
 import java.sql.SQLException;
 import java.util.Arrays;
 
+@RestController
+@RestControllerAdvice
 @Slf4j
 public class NamuApiExceptionHandler {
 
@@ -24,7 +29,7 @@ public class NamuApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("에러 메세지 : " + e.getMessage());
     }
 
-    // EntityNotFoundException 발생시 400 에러코드와 메시지 전달
+    // EntityNotFoundException 발생시 204 에러코드와 메시지 전달
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("해당 데이터가 DB에 존재하지 않습니다. \n" +

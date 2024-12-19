@@ -1,14 +1,26 @@
 package com.namusd.messenger.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
 public class JwtDto {
 
     @AllArgsConstructor
     @Builder
+    @Getter
     public static class Refresh {
-        private String access;
-        private String refresh;
+        @JsonProperty("accessToken")
+        private String accessToken;
+        @JsonProperty("refreshToken")
+        private String refreshToken;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @ToString
+    public static class RefreshRequest{
+        @JsonProperty("sendRefreshToken")
+        private String sendRefreshToken;
     }
 }

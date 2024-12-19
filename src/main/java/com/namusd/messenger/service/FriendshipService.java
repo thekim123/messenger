@@ -46,15 +46,23 @@ public class FriendshipService {
     @Transactional
     public FriendshipDto.Response acceptFriendRequest(Long userId, String friendUsername) {
         User friend = UserServiceHelper.findByUsername(friendUsername, userRepository);
-        Friendship friendship = FriendshipServiceHelper.findFriendship(userId, friend.getId(), friendshipRepository);
+        Friendship friendship = FriendshipServiceHelper.findFriendship(friend.getId(), userId, friendshipRepository);
         friendship.accept();
+
+        User loginUser = UserServiceHelper.findById(userId, userRepository);
+        Friendship entity = Friendship.builder()
+                .status(FriendStatus.ACCEPTED)
+                .friend(friend)
+                .user(loginUser)
+                .build();
+        friendshipRepository.save(entity);
         return friendshipRepository.save(friendship).toDto();
     }
 
     @Transactional
     public FriendshipDto.Response rejectFriendRequest(Long userId, String friendUsername) {
         User friend = UserServiceHelper.findByUsername(friendUsername, userRepository);
-        Friendship friendship = FriendshipServiceHelper.findFriendship(userId, friend.getId(), friendshipRepository);
+        Friendship friendship = FriendshipServiceHelper.findFriendship(friend.getId(), userId, friendshipRepository);
         friendship.reject();
         return friendshipRepository.save(friendship).toDto();
     }
@@ -70,4 +78,11 @@ public class FriendshipService {
         User user = ((PrincipalDetails) auth.getPrincipal()).getUser();
         return friendshipRepository.findByUserIdAndStatus(user.getId(), FriendStatus.PENDING);
     }
+
+    @Transactional(readOnly = true)
+    public List<Friendship> getRejectedFriends(Authentication auth) {
+        User user = ((PrincipalDetails) auth.getPrincipal()).getUser();
+        return friendshipRepository.findByUserIdAndStatus(user.getId(), FriendStatus.REJECTED);
+    }
+
 }

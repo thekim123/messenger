@@ -38,6 +38,7 @@ public class JwtService {
         return JWT.create()
                 .withSubject(loginUser.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 15 * 60 * 1000)) // 15분
+//                .withExpiresAt(new Date(System.currentTimeMillis() + 1 * 1000)) // 1초
                 .withClaim("id", loginUser.getId())
                 .withClaim("username", loginUser.getUsername())
                 .withClaim("roles", loginUser.getRoles().toString())

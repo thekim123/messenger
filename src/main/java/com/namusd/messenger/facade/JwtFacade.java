@@ -1,7 +1,5 @@
 package com.namusd.messenger.facade;
 
-import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.namusd.messenger.config.security.JwtService;
 import com.namusd.messenger.model.dto.JwtDto;
@@ -32,8 +30,8 @@ public class JwtFacade {
         String refresh = jwtService.generateRefreshToken(user, requestUrl);
 
         return JwtDto.Refresh.builder()
-                .access(access)
-                .refresh(refresh)
+                .accessToken(access)
+                .refreshToken(refresh)
                 .build();
     }
 

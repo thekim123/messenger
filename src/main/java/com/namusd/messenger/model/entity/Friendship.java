@@ -9,7 +9,6 @@ import javax.persistence.*;
 
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 @Getter
 @ToString
@@ -34,9 +33,11 @@ public class Friendship extends BaseTimeEntity {
     public void accept() {
         this.status = FriendStatus.ACCEPTED;
     }
+
     public void pending() {
         this.status = FriendStatus.PENDING;
     }
+
     public void reject() {
         this.status = FriendStatus.REJECTED;
     }
@@ -50,5 +51,9 @@ public class Friendship extends BaseTimeEntity {
                 .friend(friend.toDto())
                 .status(status)
                 .build();
+    }
+
+
+    protected Friendship() {
     }
 }

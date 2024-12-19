@@ -1,6 +1,7 @@
 package com.namusd.messenger.model.entity;
 
 import com.namusd.messenger.common.BaseTimeEntity;
+import com.namusd.messenger.model.domain.ParticipantRole;
 import com.namusd.messenger.model.domain.UserRole;
 import com.namusd.messenger.model.dto.UserDto;
 import lombok.*;
@@ -43,7 +44,6 @@ public class User extends BaseTimeEntity {
     private Set<User> friends = new HashSet<>();
 
 
-
     public UserDto.Response toDto() {
         return UserDto.Response.builder()
                 .id(this.id)
@@ -51,4 +51,5 @@ public class User extends BaseTimeEntity {
                 .roles(this.roles)
                 .build();
     }
+
 }

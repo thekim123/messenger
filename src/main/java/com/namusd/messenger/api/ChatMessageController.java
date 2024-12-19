@@ -1,4 +1,4 @@
-package com.namusd.messenger.controller;
+package com.namusd.messenger.api;
 
 import com.namusd.messenger.model.entity.ChatMessage;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -6,7 +6,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class ChatController {
+public class ChatMessageController {
 
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")

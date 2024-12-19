@@ -27,8 +27,9 @@ public class FriendController {
     }
 
     @PutMapping("/accept/{friendUsername}")
-    public ResponseEntity<?> acceptFriendRequest(@RequestParam Long userId, @PathVariable String friendUsername) {
-        FriendshipDto.Response response = friendshipService.acceptFriendRequest(userId, friendUsername);
+    public ResponseEntity<?> acceptFriendRequest(Authentication auth, @PathVariable String friendUsername) {
+        User user = ((PrincipalDetails) auth.getPrincipal()).getUser();
+        FriendshipDto.Response response = friendshipService.acceptFriendRequest(user.getId(), friendUsername);
         return ResponseEntity.ok(response);
     }
 
@@ -48,6 +49,11 @@ public class FriendController {
     @GetMapping("/list/pending")
     public ResponseEntity<?> getPendingFriends(Authentication auth) {
         List<Friendship> friends = friendshipService.getPendingFriends(auth);
+        return ResponseEntity.ok(friends);
+    }
+    @GetMapping("/list/rejected")
+    public ResponseEntity<?> getRejectedFriends(Authentication auth) {
+        List<Friendship> friends = friendshipService.getRejectedFriends(auth);
         return ResponseEntity.ok(friends);
     }
 }

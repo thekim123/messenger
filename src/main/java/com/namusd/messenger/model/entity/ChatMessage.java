@@ -3,10 +3,7 @@ package com.namusd.messenger.model.entity;
 import com.namusd.messenger.common.BaseTimeEntity;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
@@ -16,21 +13,17 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 public class ChatMessage extends BaseTimeEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String roomHash;
+    @ManyToOne
+    @JoinColumn(name = "chat_room_id")
+    private ChatRoom chatRoom; // 메시지가 속한 채팅방
 
-    private String content;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User sender; // 메시지 발신자
 
-    private String sender;
-
-    private String senderNickname;
-    private String type;
-
-    private Long fileId;
-    private LocalDateTime regDate;
-
+    private String content; // 메시지 내용
 }
